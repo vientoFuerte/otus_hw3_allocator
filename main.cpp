@@ -1,6 +1,5 @@
 // main.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 
-
 //#include "allocator.h"
 //#include "container.h"
 #include <iostream>
@@ -13,6 +12,12 @@
 
 template <typename T, std::size_t Count>
 struct logging_allocator {
+
+	template <typename U>
+	struct rebind {
+		using other = logging_allocator<U, Count>;
+	};
+	
 	using value_type = T;
 
 	using pointer = T *;
@@ -20,10 +25,7 @@ struct logging_allocator {
 	using reference = T &;
 	using const_reference = const T &;
 
-	template <typename U>
-	struct rebind {
-		using other = logging_allocator<U, Count>;
-	}
+
 
 	logging_allocator() = default;
 	~logging_allocator() = default;
@@ -70,7 +72,7 @@ struct logging_allocator {
 		std::cout << "construct" << std::endl;
 #endif
 		new (p) U(std::forward<Args>(args)...);
-	};
+	}
 
 	template <typename U>
 	void destroy(U *p) {
@@ -126,5 +128,4 @@ int main()
 
     return 0;
 }
-
 
