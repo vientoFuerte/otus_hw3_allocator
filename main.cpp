@@ -23,7 +23,7 @@ struct logging_allocator {
 	template <typename U>
 	struct rebind {
 		using other = logging_allocator<U, Count>;
-	};
+	}
 
 	logging_allocator() = default;
 	~logging_allocator() = default;
@@ -41,7 +41,7 @@ struct logging_allocator {
 #endif
         if (!buff_ptr) 
         {
-           buff_ptr= reinterpret_cast<pointer>(std::malloc(Count * sizeof(T)));std::malloc(Count * sizeof(T)); 
+           buff_ptr= reinterpret_cast<pointer>(std::malloc(Count * sizeof(T)));
         }
 		
 		if (!buff_ptr){
@@ -126,4 +126,5 @@ int main()
 
     return 0;
 }
+
 
