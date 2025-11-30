@@ -127,7 +127,7 @@ int main()
     // Использование SimpleStack
     SimpleStack<int> stack;
 	for (int i = 0; i < 10; i++) {
-	    myStack.push(i);
+	    stack.push(i);
 	}
     
     while (!stack.empty()) {
@@ -136,6 +136,7 @@ int main()
     }
     return 0;
 }
+
 
 
 
