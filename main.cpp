@@ -126,8 +126,9 @@ int main()
     std::cout << "SimpleStack"<<std::endl;
     // Использование SimpleStack
     SimpleStack<int> stack;
-    stack.push(3);
-    stack.push(2);
+	for (int i = 0; i < 10; i++) {
+	    myStack.push(i);
+	}
     
     while (!stack.empty()) {
         std::cout << stack.top() << std::endl;
@@ -135,5 +136,6 @@ int main()
     }
     return 0;
 }
+
 
 
