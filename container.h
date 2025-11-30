@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef> // для size_t
+#include <stdexcept> // для std::runtime_error
 
 template<typename T>
 class SimpleStack {
