@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef> // для size_t
+
 template<typename T>
 class SimpleStack {
 private:
