@@ -1,7 +1,7 @@
 // main.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 
 //#include "allocator.h"
-//#include "container.h"
+#include "container.h"
 #include <iostream>
 #include <map>
 #include <cstdlib>
@@ -24,8 +24,6 @@ struct logging_allocator {
 	using const_pointer = const T *;
 	using reference = T &;
 	using const_reference = const T &;
-
-
 
 	logging_allocator() = default;
 	~logging_allocator() = default;
@@ -103,9 +101,9 @@ int main()
 	{
 		m.emplace (i, factorial(i));
 	}
-        for (const auto& [key, value] : m) {
-	    std::cout << key << " " << value << std::endl;
-        }
+	for (const auto& [key, value] : m) {
+	std::cout << key << " " << value << std::endl;
+	}
 
 	
 	auto m2 = std::map<
@@ -121,11 +119,21 @@ int main()
 	    m2.emplace (i, factorial(i));
 	}
 	
-        for (const auto& [key, value] : m2) {
-	    std::cout << key << " " << value << std::endl;
-        }
+	for (const auto& [key, value] : m2) {
+	std::cout << key << " " << value << std::endl;
+	}
 
-
+    std::cout << "SimpleStack"<<std::endl;
+    // Использование SimpleStack
+    SimpleStack<int> stack;
+    stack.push(3);
+    stack.push(2);
+    
+    while (!stack.empty()) {
+        std::cout << stack.top() << std::endl;
+        stack.pop();
+    }
     return 0;
 }
+
 
