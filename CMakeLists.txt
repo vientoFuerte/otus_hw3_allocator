@@ -25,15 +25,17 @@ if (MSVC)
     target_compile_options(allocator PRIVATE
         /W4
     )
-
-
+    
 else ()
     target_compile_options(allocator PRIVATE
         -Wall -Wextra -pedantic -Werror -Wunused -Wunused-variable -Wunused-parameter
     )
-
-
 endif()
+
+target_compile_definitions(allocator PRIVATE 
+    $<$<CONFIG:Debug>:ENABLE_DEBUG_LOGGING>
+    $<$<CONFIG:RelWithDebInfo>:ENABLE_DEBUG_LOGGING>
+)
 
 install(TARGETS allocator RUNTIME DESTINATION bin)
 
