@@ -32,10 +32,10 @@ else ()
     )
 endif()
 
-target_compile_definitions(allocator PRIVATE 
-    $<$<CONFIG:Debug>:ENABLE_DEBUG_LOGGING>
-    $<$<CONFIG:RelWithDebInfo>:ENABLE_DEBUG_LOGGING>
-)
+# target_compile_definitions(allocator PRIVATE 
+#    $<$<CONFIG:Debug>:ENABLE_DEBUG_LOGGING>
+#    $<$<CONFIG:RelWithDebInfo>:ENABLE_DEBUG_LOGGING>
+#)
 
 install(TARGETS allocator RUNTIME DESTINATION bin)
 
