@@ -3,7 +3,7 @@
 #include "allocator.h"
 
 template<typename T, typename Allocator = std::allocator<T>>
-class SimpleStack {
+class SimpleQueue {
 private:
     struct Node {
         T data;
@@ -17,20 +17,21 @@ private:
 
     };
   
-    Node* top_node;
-    size_t stack_size;
-    
-    //using NodeAllocator = typename Allocator::template rebind<Node>::other;
+    Node* front_node;
+    Node* back_node;
+    size_t queue_size;
+
     using NodeAllocator = typename std::allocator_traits<Allocator>::template rebind_alloc<Node>;
     NodeAllocator alloc;
 
 public:
-    SimpleStack() {
-        top_node = nullptr; 
-        stack_size = 0;
+    SimpleQueue() {
+        front_node = nullptr;
+        back_node = nullptr;
+        queue_size = 0;
         }
     
-    ~SimpleStack() {
+    ~SimpleQueue() {
         while (!empty()) {
             pop();
         }
@@ -40,46 +41,86 @@ public:
     template <class... Args>
     void push(Args&&... args) {
         Node* new_node = std::allocator_traits<NodeAllocator>::allocate(alloc, 1);
-        //Node* new_node = alloc.allocate(1);
-
         std::allocator_traits<NodeAllocator>::construct(alloc, new_node, std::forward<Args>(args)...);
-        //alloc.construct(new_node, std::forward<Args>(args)...); 
-        //Node* new_node = new Node(value);
-        new_node->next = top_node;
-        top_node = new_node;
-        ++stack_size;
+
+        new_node->next = nullptr;
+
+        if (empty()) {
+            front_node = new_node;
+        }
+        else {
+            back_node->next = new_node;
+        }
+        back_node = new_node;
+        ++queue_size;
     }
     
-    // Удаление элемента
+    // Удаление элемента из начала очереди
     void pop() {
-        if (top_node) {
-            Node* temp = top_node;
-            top_node = top_node->next;
+        if (!empty()) {
+            Node* temp = front_node;
+            front_node = front_node->next;
+            if (front_node == nullptr) {
+                back_node = nullptr;
+            }
             std::allocator_traits<NodeAllocator>::destroy(alloc, temp);
             std::allocator_traits<NodeAllocator>::deallocate(alloc, temp, 1);
-           // alloc.destroy(temp);
-            //alloc.deallocate(temp, 1);
-            //delete temp;
-            --stack_size;
+            --queue_size;
+        }
+    }
+
+    // Удаление элемента по значению
+    void remove(const T& value) {
+        Node* current = front_node;
+        Node* prev = nullptr;
+
+        while (current) {
+            if (current->data == value) {
+                if (prev) {
+                    prev->next = current->next;
+                }
+                else {
+                    front_node = current->next;
+                }
+                if (current == back_node) {
+                    back_node = prev;
+                }
+                std::allocator_traits<NodeAllocator>::destroy(alloc, current);
+                std::allocator_traits<NodeAllocator>::deallocate(alloc, current, 1);
+                --queue_size;
+                return;
+            }
+            prev = current;
+            current = current->next;
         }
     }
     
     // Верхний элемент
-    T top() {
-        if (top_node) {
-            return top_node->data;
+    T front() {
+        if (!empty()) {
+            return front_node->data;
         }
-        throw std::runtime_error("Stack is empty");
+        throw std::runtime_error("Queue is empty");
     }
 
     
-    // Размер стека
+    // Размер очереди
     size_t size() {
-        return stack_size; 
+        return queue_size;
     }
     // Проверка на пустоту
     bool empty()  { 
-        return stack_size == 0 ? true : false;
+        return queue_size == 0 ? true : false;
     
+    }
+
+    // Проход по всем элементам от начала с выводом
+    void traverse() {
+        Node* current = front_node;
+        while (current) {
+            std::cout << current->data << std::endl;
+            current = current->next;
+        }
+        std::cout << std::endl;
     }
 };
