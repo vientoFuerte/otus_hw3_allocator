@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.12)
 
 project(allocator)
 
+option(WITH_TESTS "Build tests" ON)
+
 add_executable(allocator main.cpp)
 
 set_target_properties(allocator PROPERTIES
