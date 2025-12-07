@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(allocator)
 
-option(WITH_BOOST_TEST "Whether to build Boost test" ON)
+#option(WITH_BOOST_TEST "Whether to build Boost test" ON)
 
 
 add_executable(allocator main.cpp)
@@ -18,24 +18,46 @@ set_target_properties(allocator PROPERTIES
 if(WITH_BOOST_TEST)
     find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
-
 endif()
+
+
+# 3. Тест (если файл test.cpp существует)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test.cpp)
+    # Ищем установленный gtest
+    find_package(GTest REQUIRED)
+    
+    # Тестовый исполняемый файл
+    add_executable(allocator_tests test.cpp)
+    
+    # Линкуем с системным gtest
+    target_link_libraries(allocator_tests PRIVATE GTest::gtest GTest::gtest_main)
+    
+    # Тесты
+    enable_testing()
+    add_test(NAME AllTests COMMAND allocator_tests)
+else()
+    message(WARNING "test.cpp not found, tests will not be built")
+endif()
+
 
 if (MSVC)
     target_compile_options(allocator PRIVATE
         /W4
     )
-    
+
+
 else ()
     target_compile_options(allocator PRIVATE
         -Wall -Wextra -pedantic -Werror -Wunused -Wunused-variable -Wunused-parameter
     )
+
 endif()
 
-# target_compile_definitions(allocator PRIVATE 
-#    $<$<CONFIG:Debug>:ENABLE_DEBUG_LOGGING>
-#    $<$<CONFIG:RelWithDebInfo>:ENABLE_DEBUG_LOGGING>
-#)
+target_compile_definitions(allocator PRIVATE 
+    $<$<CONFIG:Debug>:ENABLE_DEBUG_LOGGING>
+    $<$<CONFIG:RelWithDebInfo>:ENABLE_DEBUG_LOGGING>
+)
+
 
 install(TARGETS allocator RUNTIME DESTINATION bin)
 
@@ -46,5 +68,5 @@ include(CPack)
 
 if(WITH_BOOST_TEST)
     enable_testing()
-    #add_test(test_version test_version)
+    add_test(test_version test_version)
 endif()
