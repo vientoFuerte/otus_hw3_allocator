@@ -3,9 +3,9 @@
 #include <cstdlib>
 #include <iostream>
 
-
+/*
 #define USE_LOG
-#undef USE_LOG
+#undef USE_LOG */
 
 template <typename T, std::size_t Count>
 struct logging_allocator {
@@ -21,7 +21,16 @@ struct logging_allocator {
 		using other = logging_allocator<U, Count>;
 	};
 
-	logging_allocator() = default;
+	    logging_allocator() {
+#ifdef USE_LOG
+        std::cout << "Allocator created with pool size: " 
+                  << Count * sizeof(T) << " bytes" << std::endl;
+#endif
+
+        for (size_t i = 0; i < Count; ++i) {
+            used_slots[i] = false;
+        }
+    }
 	~logging_allocator() = default;
 
 	template <typename U>
@@ -29,35 +38,42 @@ struct logging_allocator {
 	}
 
 	T *allocate(std::size_t n) {
-	    if (used_elements + n > Count) {
-	      throw std::bad_alloc();
-	    }
+
+		if (n != 1) {  //поддерживаем только одиночные выделения
+		    throw std::bad_alloc();
+		}
+
+         // Ищем свободный слот
+        for (size_t i = 0; i < Count; ++i) {
+            if (!used_slots[i]) {
+                used_slots[i] = true;
+                pointer result_ptr = reinterpret_cast<pointer>(pool + i * sizeof(T));
+                return result_ptr;
+            }
+        }
+		
+		throw std::bad_alloc();
+		
 #ifdef USE_LOG
 		std::cout << "allocate: [n = " << n << "]" << std::endl;
 #endif
-        if (!buff_ptr) 
-        {
-           buff_ptr= reinterpret_cast<pointer>(std::malloc(Count * sizeof(T)));
-        }
-		
-		if (!buff_ptr){
-			throw std::bad_alloc();
-		}
-		
-		pointer result_ptr = buff_ptr + used_elements;
-		used_elements += n;	
-		return result_ptr;
+
 	}
 
 	void deallocate(T *p, std::size_t n) {
+	 if (n != 1) return; // поддерживаем только одиночные освобождения
+
+    // Находим индекс освобождаемого слота
+    std::byte* ptr_byte = reinterpret_cast<std::byte*>(p);
+    size_t offset = ptr_byte - pool;
+    size_t slot_index = offset / sizeof(T);
+    
+    if (slot_index < Count && used_slots[slot_index]) {
+        used_slots[slot_index] = false;
+    }
 #ifdef USE_LOG
 		std::cout << "deallocate: [n  = " << n << "] " << std::endl;
 #endif 
-        used_elements -= n; 
-        if (used_elements == 0) {
-    		std::free(p);	
-    		buff_ptr = nullptr;
-        }
 	}
 
 	template <typename U, typename... Args>
@@ -77,8 +93,8 @@ struct logging_allocator {
 	}
 	
 	private:
-	pointer buff_ptr = nullptr; //Указатель на начало буфера выделенной памяти
-	size_t  used_elements  = 0; // Счетчик использованных элементов в буфере
-};
+		std::byte pool[Count * sizeof(T)]; // Основной пул памяти (статический массив)
+		bool used_slots[Count];            // Массив свободных ячеек.
 
+};
 
