@@ -44,7 +44,13 @@ jobs:
           fi
       
       - run: cmake --build . --target package
-      
+
+         # ДОБАВЛЕНО: Переименовываем созданный deb-пакет
+      - run: |
+          echo "Renaming deb package to allocator-Linux.deb..."
+          mv allocator-*.deb allocator-Linux.deb 2>/dev/null || true
+          ls -la *.deb
+          
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
