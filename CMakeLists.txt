@@ -12,7 +12,7 @@ set_target_properties(allocator PROPERTIES
 )
 
 # 3. Тест (если файл test.cpp существует)
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test.cpp)
+if(WITH_TESTS AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test.cpp)
     # Ищем установленный gtest
     find_package(GTest REQUIRED)
     
