@@ -34,7 +34,7 @@ int main()
         std::less<int>,
         logging_allocator<
         std::pair<
-        const int, int>, 11>>{};
+        const int, int>, 10>>{};
 
     for (int i = 0; i < 10; i++) {
         m2.emplace(i, factorial(i));
@@ -67,4 +67,3 @@ int main()
 
     return 0;
 }
-
