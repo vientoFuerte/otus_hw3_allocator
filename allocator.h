@@ -1,11 +1,13 @@
 #pragma once
 
+#ifdef ENABLE_DEBUG_LOGGING
+    #ifndef USE_LOG
+        #define USE_LOG
+    #endif
+#endif
+
 #include <cstdlib>
 #include <iostream>
-
-/*
-#define USE_LOG
-#undef USE_LOG */
 
 template <typename T, std::size_t Count>
 struct logging_allocator {
