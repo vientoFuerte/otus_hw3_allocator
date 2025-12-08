@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 project(allocator)
 
 option(WITH_TESTS "Build tests" ON)
+option(USE_LOG "Enable debug logging" OFF)  # Новая опция логгирования
 
 add_executable(allocator main.cpp)
 
@@ -10,6 +11,16 @@ set_target_properties(allocator PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
 )
+
+
+# Управление логированием через опцию USE_LOG
+if(USE_LOG)
+    target_compile_definitions(allocator PRIVATE ENABLE_DEBUG_LOGGING)
+    message(STATUS "Debug logging enabled via USE_LOG")
+else()
+    message(STATUS "Debug logging disabled")
+endif()
+
 
 # 3. Тест (если файл test.cpp существует)
 if(WITH_TESTS AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test.cpp)
@@ -46,10 +57,11 @@ else ()
     )
 endif()
 
-target_compile_definitions(allocator PRIVATE 
-    $<$<CONFIG:Debug>:ENABLE_DEBUG_LOGGING>
-    $<$<CONFIG:RelWithDebInfo>:ENABLE_DEBUG_LOGGING>
-)
+# конфликтует с USE_LOG
+#target_compile_definitions(allocator PRIVATE 
+#    $<$<CONFIG:Debug>:ENABLE_DEBUG_LOGGING>
+#    $<$<CONFIG:RelWithDebInfo>:ENABLE_DEBUG_LOGGING>
+#)
 
 
 install(TARGETS allocator RUNTIME DESTINATION bin)
@@ -58,5 +70,4 @@ set(CPACK_GENERATOR DEB)
 
 set(CPACK_PACKAGE_CONTACT example@example.com)
 include(CPack)
-
 
